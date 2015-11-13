@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">Hoje Não!</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Configurações</string>
+    <string name="action_save">Salvar</string>
+    <string name="action_add">Adicionar</string>
+    <string name="att_name">Nome do despertador</string>
+    <string name="att_snooze">Habilitar função soneca?</string>
+    <string name="att_snooze_time">Duração da soneca</string>
+    <string name="att_basic_data">Dados básicos</string>
+    <string name="att_holiday">Feriados</string>
+    <string name="att_snooze_time_min">Minutos</string>
+    <string name="att_sunday">Domingo</string>
+    <string name="att_monday">Segunda-feira</string>
+    <string name="att_tuesday">Terça-feira</string>
+    <string name="att_wednesday">Quarta-feira</string>
+    <string name="att_thusday">Quinta-feira</string>
+    <string name="att_friday">Sexta-feira</string>
+    <string name="att_saturday">Sábado</string>
+    <string name="att_dias_semana">Quais dias da semana?</string>
+    <string name="att_dias_feriado">Despertar em feriados?</string>
+    <string name="att_dias_feriado_explain">Essa função permite que o despertador não toque em caso de feriados na sua cidade.</string>
+    <string name="att_city">Cidade</string>
+    <string name="att_state">Estado</string>
+    <string name="title_activity_clock">ClockActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_edit_clock">Hoje Não!</string>
+    <string name="title_activity_settings">Configurações</string>
+    <string name="country_prompt">Choose a country</string>
+    <string-array name="country_arrays">
+        <item>Malaysia</item>
+        <item>United States</item>
+        <item>Indonesia</item>
+        <item>France</item>
+        <item>Italy</item>
+        <item>Singapore</item>
+        <item>New Zealand</item>
+        <item>India</item>
+    </string-array>
+</resources>
