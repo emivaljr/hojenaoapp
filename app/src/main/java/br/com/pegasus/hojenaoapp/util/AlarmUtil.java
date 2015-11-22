@@ -22,7 +22,7 @@ public class AlarmUtil {
         AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, ClockReceiver.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("alarm_clock", alarmClock);
+        bundle.putInt("alarm_clock_id", alarmClock.getId());
         intent.putExtras(bundle);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, alarmClock.getId(), intent, 0);
         if(cancelLast) {

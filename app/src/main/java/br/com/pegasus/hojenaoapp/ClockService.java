@@ -43,6 +43,8 @@ public class ClockService extends Service implements
 
     private LocalBroadcastManager mLocalBroadcastManager;
 
+    private Bundle bundle;
+
 
     @Override
     public void onCreate() {
@@ -108,6 +110,9 @@ public class ClockService extends Service implements
 
     private void sendSucessBroadcast() {
         Intent intent = new Intent(Constants.CALLBACK_LOCALIZATION);
+        if(bundle!=null) {
+            intent.putExtras(bundle);
+        }
         intent.putExtra("sucess", true);
         mLocalBroadcastManager.sendBroadcast(intent);
     }
@@ -145,7 +150,7 @@ public class ClockService extends Service implements
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
+        bundle = intent.getExtras();
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }

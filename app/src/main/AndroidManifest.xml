@@ -9,11 +9,12 @@
     <application
         android:name=".HojeNaoApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/red_alarm_clock"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,7 +22,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ClockActivity" >
+        <activity android:name=".ClockActivity"
+            android:screenOrientation="portrait">
         </activity>
 
         <receiver
@@ -32,6 +34,7 @@
 
         <activity
             android:name=".EditClockActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_edit_clock"
             android:parentActivityName=".MainActivity" >
         </activity>
@@ -44,6 +47,7 @@
 
         <activity
             android:name=".SettingsActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity" >
         </activity>

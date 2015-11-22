@@ -164,7 +164,7 @@ public class SettingsActivity extends AppCompatActivity implements Serializable{
         valueCity.setVisibility(View.VISIBLE);
 
         spinner.setVisibility(View.GONE);
-
+        findViewById(R.id.labelCity).setVisibility(View.VISIBLE);
         spinnerCity.setVisibility(View.GONE);
         if(settings.contains(Constants.PREFS_CITY)&&settings.contains(Constants.PREFS_STATE)) {
             carregarFeriados(settings.getString(Constants.PREFS_CITY, ""));
@@ -177,17 +177,19 @@ public class SettingsActivity extends AppCompatActivity implements Serializable{
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             check++;
             if(check>1) {
-                String state = settings.getString(Constants.PREFS_STATE, "");
-                //FIXME está passando aqui na primeira vez que carrega o estado.
-                if (state == null || !state.equals(((TextView) view).getText())) {
-                    SharedPreferences.Editor editor = settings.edit();
-                    editor.putString(Constants.PREFS_STATE, (String) ((TextView) view).getText());
-                    editor.commit();
-                    String newState  = (String) ((TextView) view).getText();
-                    settings.edit().remove(Constants.PREFS_CITY);
-                    carregarCidades(newState);
-                    LinearLayout linearLayout = (LinearLayout)findViewById(R.id.layoutFeriados);
-                    linearLayout.setVisibility(View.GONE);
+                CharSequence selectedState = ((TextView) view).getText();
+                if(!selectedState.equals("Selecione")) {
+                    String state = settings.getString(Constants.PREFS_STATE, "");
+                    if (state == null || !state.equals(selectedState)) {
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putString(Constants.PREFS_STATE, (String) ((TextView) view).getText());
+                        editor.commit();
+                        String newState = (String) ((TextView) view).getText();
+                        settings.edit().remove(Constants.PREFS_CITY);
+                        carregarCidades(newState);
+                        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.layoutFeriados);
+                        linearLayout.setVisibility(View.GONE);
+                    }
                 }
             }
         }
@@ -215,12 +217,15 @@ public class SettingsActivity extends AppCompatActivity implements Serializable{
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             checkCity=checkCity+1;
             if(checkCity>1) {
-                String city = settings.getString(Constants.PREFS_CITY, "");
-                if (city == null || !city.equals(((TextView) view).getText())) {
-                    SharedPreferences.Editor editor = settings.edit();
-                    editor.putString("city", (String) ((TextView) view).getText());
-                    editor.commit();
-                    carregarFeriados(settings.getString(Constants.PREFS_CITY, ""));
+                CharSequence selectedCity = ((TextView) view).getText();
+                if(!selectedCity.equals("Selecione")) {
+                    String city = settings.getString(Constants.PREFS_CITY, "");
+                    if (city == null || !city.equals(selectedCity)) {
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putString("city", (String) ((TextView) view).getText());
+                        editor.commit();
+                        carregarFeriados(settings.getString(Constants.PREFS_CITY, ""));
+                    }
                 }
             }
         }
@@ -244,6 +249,7 @@ public class SettingsActivity extends AppCompatActivity implements Serializable{
     }
 
     private void carregaDadosSpinnerEstado(List<String> lista) {
+        lista.add(0,"Selecione");
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>
                 (this, android.R.layout.simple_spinner_item, lista);
 
@@ -265,6 +271,7 @@ public class SettingsActivity extends AppCompatActivity implements Serializable{
     }
 
     private void carregaListaCidade(List<String> listaCidade) {
+        listaCidade.add(0,"Selecione");
         ArrayAdapter<String> dataAdapterCity = new ArrayAdapter<String>
                 (this, android.R.layout.simple_spinner_item, listaCidade);
 

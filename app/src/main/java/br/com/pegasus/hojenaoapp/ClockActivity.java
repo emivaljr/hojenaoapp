@@ -11,6 +11,7 @@ import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -100,14 +101,6 @@ public class ClockActivity extends AppCompatActivity {
                 finish();
                 ringtoneSound.stop();
                 wakeLock.release();
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(System.currentTimeMillis());
-                calendar.set(Calendar.HOUR_OF_DAY, alarmClock.getHour());
-                calendar.set(Calendar.MINUTE, alarmClock.getMinute());
-                calendar.set(Calendar.SECOND, 00);
-                calendar.add(Calendar.MINUTE, alarmClock.getSnooze());
-                alarmClock.setHour(calendar.get(Calendar.HOUR_OF_DAY));
-                alarmClock.setMinute(calendar.get(Calendar.MINUTE));
                 AlarmUtil.configureAlarm(alarmClock, getApplicationContext(), false);
 
             }
@@ -122,10 +115,16 @@ public class ClockActivity extends AppCompatActivity {
     }
 
     private void tocarSom() {
+        AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        int volume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
+        if(volume==0)
+            volume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
+        audioManager.setStreamVolume(AudioManager.STREAM_ALARM, volume,AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
         Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         ringtoneSound = RingtoneManager.getRingtone(getApplicationContext(), ringtoneUri);
 
         if (ringtoneSound != null) {
+            ringtoneSound.setStreamType(AudioManager.STREAM_ALARM);
             ringtoneSound.play();
         }
     }
