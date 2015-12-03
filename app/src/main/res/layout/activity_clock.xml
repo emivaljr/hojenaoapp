@@ -1,17 +1,20 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:background="@android:color/black"
-    tools:context=".ClockActivity" >
-    <!-- This FrameLayout insets its children based on system windows using
-         android:fitsSystemWindows. -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ClockActivity"
+    android:background="@android:color/black"
+    tools:ignore="MergeRootFrame">
 
-        <LinearLayout
-            android:id="@+id/groupNumbers"
-            android:orientation="vertical"
-            android:gravity="top"
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:weightSum="1">
+    <LinearLayout
+        android:id="@+id/groupNumbers"
+        android:orientation="vertical"
+        android:gravity="top"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="1">
 
         <AnalogClock
             android:layout_width="match_parent"
@@ -28,41 +31,53 @@
             android:id="@+id/textClock"
             android:layout_gravity="center" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="70dp"
-                android:text="New Text"
-                android:textSize="25dp"
-                android:textColor="@android:color/white"
-                android:id="@+id/textView"
-                android:gravity="center"
-                android:layout_gravity="center"
-                />
-            <LinearLayout
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:text="New Text"
+            android:textSize="25dp"
+            android:textColor="@android:color/white"
+            android:id="@+id/textView"
+            android:gravity="center"
+            android:layout_gravity="center"
+            />
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="bottom">
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="77dp"
-            android:layout_marginRight="3dp"
-            android:text="Fechar"
-            android:background="@android:color/holo_green_light"
-            android:layout_weight=".50"
-            android:id="@+id/close"
-            android:layout_gravity="left|center" />
+            android:layout_height="150dp"
+            android:layout_gravity="bottom"
+            >
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="77dp"
+                android:layout_marginRight="3dp"
+                android:background="@drawable/buttonshape"
+                android:text="@string/close"
+                android:textSize="20sp"
+                android:layout_weight=".50"
+                android:id="@+id/close"
+                android:layout_gravity="left|center" />
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="77dp"
-            android:text="Soneca"
-            android:layout_marginLeft="3dp"
-            android:background="@android:color/holo_orange_light"
-            android:layout_weight=".50"
-            android:id="@+id/snooze"
-            android:layout_gravity="right|center" />
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="77dp"
+                android:text="@string/snooze"
+                android:layout_marginLeft="3dp"
+                android:background="@drawable/buttonshape_yellow"
+                android:textSize="20sp"
+                android:layout_weight=".50"
+                android:id="@+id/snooze"
+                android:layout_gravity="right|center" />
         </LinearLayout>
+
     </LinearLayout>
 
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/ad_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/banner_ad_unit_id" />
 
-</FrameLayout>
+</RelativeLayout>

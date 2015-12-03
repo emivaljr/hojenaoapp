@@ -6,7 +6,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+
 import br.com.pegasus.hojenaoapp.entity.AlarmClock;
+import br.com.pegasus.hojenaoapp.entity.Holiday;
 import br.com.pegasus.hojenaoapp.persistence.contracts.AlarmClockContract;
 
 /**
@@ -169,12 +174,55 @@ public class ClockDatabaseHelper extends SQLiteOpenHelper{
                 null,                                     // don't filter by row groups
                 sortOrder                                 // The sort order
         );
-
-
-
-
-
-
         return cursor;
     }
+
+    public List<AlarmClock> recuperarListAlarmes() {
+        SQLiteDatabase db = getReadableDatabase();
+        // Define a projection that specifies which columns from the database
+// you will actually use after this query.
+        String[] projection = {
+                AlarmClockContract.AlarmClockEntry._ID,
+                AlarmClockContract.AlarmClockEntry.COLUMN_NAME_HOUR,
+                AlarmClockContract.AlarmClockEntry.COLUMN_NAME_MINUTE,
+                AlarmClockContract.AlarmClockEntry.COLUMN_NAME_NAME,
+                AlarmClockContract.AlarmClockEntry.COLUMN_NAME_ACTIVE,
+                AlarmClockContract.AlarmClockEntry.COLUMN_NAME_DAYS_OF_WEEK,
+                AlarmClockContract.AlarmClockEntry.COLUMN_NAME_SNOOZE,
+                AlarmClockContract.AlarmClockEntry.COLUMN_NAME_HOLIDAY
+        };
+
+// How you want the results sorted in the resulting Cursor
+        String sortOrder =
+                AlarmClockContract.AlarmClockEntry.COLUMN_NAME_HOUR + " ASC";
+
+        Cursor cursor = db.query(
+                AlarmClockContract.AlarmClockEntry.TABLE_NAME,  // The table to query
+                projection,                               // The columns to return
+                null,                                // The columns for the WHERE clause
+                null,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                sortOrder                                 // The sort order
+        );
+        List<AlarmClock> lista = new ArrayList<>();
+            cursor.moveToFirst();
+            while (cursor.isAfterLast() == false) {
+                int i = 0;
+                AlarmClock alarmClock = new AlarmClock();
+                alarmClock.setId(cursor.getInt(i++));
+                alarmClock.setHour(cursor.getInt(i++));
+                alarmClock.setMinute(cursor.getInt(i++));
+                alarmClock.setName(cursor.getString(i++));
+                alarmClock.setActive(cursor.getInt(i++) != 0);
+                alarmClock.setDaysofweek(cursor.getString(i++));
+                alarmClock.setSnooze(cursor.getInt(i++));
+                alarmClock.setHoliday(cursor.getInt(i++) != 0);
+                lista.add(alarmClock);
+                cursor.moveToNext();
+            }
+            cursor.close();
+        return lista;
+    }
+
 }

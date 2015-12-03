@@ -15,14 +15,23 @@ import java.util.Date;
 import br.com.pegasus.hojenaoapp.entity.AlarmClock;
 import br.com.pegasus.hojenaoapp.persistence.ClockDatabaseHelper;
 import br.com.pegasus.hojenaoapp.persistence.HolidayDatabaseHelper;
+import br.com.pegasus.hojenaoapp.util.AlarmUtil;
 import br.com.pegasus.hojenaoapp.util.Constants;
 
 public class ClockReceiver extends BroadcastReceiver {
     public ClockReceiver() {
     }
-
+    private ClockDatabaseHelper clockDatabaseHelper;
     @Override
     public void onReceive(Context context, Intent intent) {
+        clockDatabaseHelper = new ClockDatabaseHelper(context);
+        Integer snooze =  intent.getIntExtra("snooze", 0);
+        if(snooze != 0){
+            Integer id =  intent.getIntExtra("alarm_clock_id",0);
+            AlarmClock alarmClock = clockDatabaseHelper.recuperarAlarmePorId(id.longValue());
+            executeAction(context,alarmClock);
+            return;
+        }
         SharedPreferences settings = context.getSharedPreferences(Constants.PREFS_NAME, 0);
         if(settings.getBoolean(Constants.PREFS_DETECT_CITY, true)) {
             IntentFilter filter= new IntentFilter();
@@ -34,6 +43,7 @@ public class ClockReceiver extends BroadcastReceiver {
         }else{
             callUI(context,intent,settings);
         }
+
     }
     private BroadcastReceiver returnAsyncCall = new BroadcastReceiver() {
         @Override
@@ -44,8 +54,8 @@ public class ClockReceiver extends BroadcastReceiver {
     };
     private void callUI(Context context, Intent intent, SharedPreferences settings) {
         Integer id =  intent.getIntExtra("alarm_clock_id",0);
-        ClockDatabaseHelper helper = new ClockDatabaseHelper(context);
-        AlarmClock alarmClock = helper.recuperarAlarmePorId(id.longValue());
+
+        AlarmClock alarmClock = clockDatabaseHelper.recuperarAlarmePorId(id.longValue());
         HolidayDatabaseHelper holidayDatabaseHelper = new HolidayDatabaseHelper(context);
         if(alarmClock != null && alarmClock.getActive()) {
             Calendar cal = Calendar.getInstance();
@@ -59,8 +69,8 @@ public class ClockReceiver extends BroadcastReceiver {
                     !holidayDatabaseHelper.isFeriado(new Date(),settings.getString(Constants.PREFS_CITY,""))) {
                 executeAction(context,alarmClock);
             }
+            AlarmUtil.configureAlarm(alarmClock, context, false);
         }
-
     }
     public void executeAction(Context context,AlarmClock alarmClock) {
         Intent i = new Intent(context,ClockActivity.class);

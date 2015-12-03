@@ -5,13 +5,12 @@ import android.content.Context;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.pegasus.hojenaoapp.backend.myApi.model.Feriado;
+import br.com.pegasus.hojenaoapp.entity.Feriado;
 import br.com.pegasus.hojenaoapp.entity.Holiday;
 import br.com.pegasus.hojenaoapp.persistence.HolidayDatabaseHelper;
 import br.com.pegasus.hojenaoapp.util.Constants;

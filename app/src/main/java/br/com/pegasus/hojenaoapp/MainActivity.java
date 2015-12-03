@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private  AlarmClockCursorAdapter adapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView listview;
+    private TextView textview;
 
     private static int SAVE_ALARM_REQUEST = 10;
 
@@ -54,7 +55,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mDbHelper = new ClockDatabaseHelper(getApplicationContext());
         checkCity();
-        listview = (RecyclerView) findViewById(R.id.recyclerView);
+        listview = (RecyclerView) findViewById(R.id.list);
+        textview = (TextView) findViewById(R.id.list_empty);
         listview.setItemAnimator(new DefaultItemAnimator());
         listview.setHasFixedSize(true);
         Cursor list = mDbHelper.recuperarListaAlarmes();
@@ -63,7 +65,8 @@ public class MainActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         listview.setLayoutManager(mLayoutManager);
         listview.setAdapter(adapter);
-
+        listview.setVisibility(list.getCount() == 0 ? View.GONE : View.VISIBLE);
+        textview.setVisibility(list.getCount() == 0 ? View.VISIBLE : View.GONE);
     }
 
     private void checkCity() {
@@ -76,15 +79,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        ((AlarmClockCursorAdapter)listview.getAdapter()).setCursor(mDbHelper.recuperarListaAlarmes());
+        Cursor list = mDbHelper.recuperarListaAlarmes();
+        ((AlarmClockCursorAdapter)listview.getAdapter()).setCursor(list);
         listview.getAdapter().notifyDataSetChanged();
-        // Check which request we're responding to
-        //if (requestCode == SAVE_ALARM_REQUEST) {
-            // Make sure the request was successful
-            //if (resultCode == RESULT_OK) {
-                //adapter.changeCursor(recuperarListaAlarmes());
-            //}
-        //}
+        listview.setVisibility(list.getCount() == 0 ? View.GONE : View.VISIBLE);
+        textview.setVisibility(list.getCount() == 0 ? View.VISIBLE : View.GONE);
     }
 
 
@@ -170,6 +169,8 @@ public class MainActivity extends AppCompatActivity {
                         itemView.setBackgroundColor(getResources().getColor(R.color.icons));
                         AlarmUtil.configureAlarm(alarmClock, getApplicationContext(), true);
                         cursor = mDbHelper.recuperarListaAlarmes();
+                        listview.setVisibility(cursor.getCount() == 0 ? View.GONE : View.VISIBLE);
+                        textview.setVisibility(cursor.getCount() == 0 ? View.VISIBLE : View.GONE);
                         notifyDataSetChanged();
                     }
                 });
