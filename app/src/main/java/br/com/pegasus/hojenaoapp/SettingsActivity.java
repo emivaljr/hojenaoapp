@@ -7,10 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +37,7 @@ import br.com.pegasus.hojenaoapp.task.CityAsyncTask;
 import br.com.pegasus.hojenaoapp.task.HolidayAsyncTask;
 import br.com.pegasus.hojenaoapp.task.StateAsyncTask;
 import br.com.pegasus.hojenaoapp.util.Constants;
+import br.com.pegasus.hojenaoapp.util.GPSUtil;
 
 
 public class SettingsActivity extends AppCompatActivity implements Serializable{
@@ -44,7 +47,7 @@ public class SettingsActivity extends AppCompatActivity implements Serializable{
     private Spinner spinner;
     private Spinner spinnerCity;
     private  SharedPreferences settings;
-    private Switch mSwitch;
+    private SwitchCompat mSwitch;
     private ProgressDialog Dialog;
     private AlertDialog AlertDialog;
     private HolidayDatabaseHelper holidayDatabaseHelper;
@@ -65,7 +68,7 @@ public class SettingsActivity extends AppCompatActivity implements Serializable{
                 .setMessage("Ocorreu um erro ao recuperar os dados.")
                 .setNeutralButton("Ok",null)
                 .create();
-        mSwitch = (Switch) findViewById(R.id.checkBox);
+        mSwitch = (SwitchCompat) findViewById(R.id.checkBox);
         mSwitch.setChecked(settings.getBoolean("detect_city", true));
         spinner = (Spinner) findViewById(R.id.spinnerState);
         spinnerCity = (Spinner) findViewById(R.id.spinnerCity);
@@ -99,6 +102,11 @@ public class SettingsActivity extends AppCompatActivity implements Serializable{
         filter.addAction(Constants.CALLBACK_LOCALIZATION);
         LocalBroadcastManager.getInstance(this).registerReceiver(returnAsyncCall, filter);
     }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == GPSUtil.ENABLING_GPS){
+            new GPSUtil().detectaAutomaticamente(this,Dialog);
+        }
+    }
 
      private CompoundButton.OnCheckedChangeListener updateAutomaticallyListener =  new CompoundButton.OnCheckedChangeListener() {
         @Override
@@ -109,10 +117,7 @@ public class SettingsActivity extends AppCompatActivity implements Serializable{
                 editor.putBoolean(Constants.PREFS_DETECT_CITY, isChecked);
                 editor.commit();
                 if(isChecked) {
-                    Dialog.setMessage("Atualizando dados de Estado e cidade...");
-                    Dialog.show();
-                    Intent i = new Intent(SettingsActivity.this, ClockService.class);
-                    startService(i);
+                   new GPSUtil().detectaAutomaticamente(SettingsActivity.this,false);
                 }
                 settings.edit().remove(Constants.PREFS_STATE).commit();
                 settings.edit().remove(Constants.PREFS_CITY).commit();

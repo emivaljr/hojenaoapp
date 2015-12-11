@@ -3,12 +3,15 @@ package br.com.pegasus.hojenaoapp;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,6 +31,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.github.clans.fab.FloatingActionButton;
 import com.parse.Parse;
 
 import br.com.pegasus.hojenaoapp.entity.AlarmClock;
@@ -35,6 +39,7 @@ import br.com.pegasus.hojenaoapp.persistence.ClockDatabaseHelper;
 import br.com.pegasus.hojenaoapp.persistence.contracts.AlarmClockContract;
 import br.com.pegasus.hojenaoapp.util.AlarmUtil;
 import br.com.pegasus.hojenaoapp.util.Constants;
+import br.com.pegasus.hojenaoapp.util.GPSUtil;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -46,14 +51,18 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView listview;
     private TextView textview;
+    private SharedPreferences settings;
 
     private static int SAVE_ALARM_REQUEST = 10;
+
+    private static int ENABLING_GPS = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mDbHelper = new ClockDatabaseHelper(getApplicationContext());
+        settings = getSharedPreferences(Constants.PREFS_NAME, 0);
         checkCity();
         listview = (RecyclerView) findViewById(R.id.list);
         textview = (TextView) findViewById(R.id.list_empty);
@@ -67,23 +76,34 @@ public class MainActivity extends AppCompatActivity {
         listview.setAdapter(adapter);
         listview.setVisibility(list.getCount() == 0 ? View.GONE : View.VISIBLE);
         textview.setVisibility(list.getCount() == 0 ? View.VISIBLE : View.GONE);
+        ImageButton fab =  (ImageButton) findViewById(R.id.add_button);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(new Intent(getApplication(), EditClockActivity.class), SAVE_ALARM_REQUEST);
+            }
+        });
     }
 
     private void checkCity() {
-        SharedPreferences settings = getSharedPreferences(Constants.PREFS_NAME, 0);
         if(!settings.contains("city")) {
-            Intent i = new Intent(this, ClockService.class);
-            startService(i);
+            new GPSUtil().detectaAutomaticamente(this,false);
         }
     }
 
 
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Cursor list = mDbHelper.recuperarListaAlarmes();
-        ((AlarmClockCursorAdapter)listview.getAdapter()).setCursor(list);
-        listview.getAdapter().notifyDataSetChanged();
-        listview.setVisibility(list.getCount() == 0 ? View.GONE : View.VISIBLE);
-        textview.setVisibility(list.getCount() == 0 ? View.VISIBLE : View.GONE);
+        if(requestCode == SAVE_ALARM_REQUEST) {
+            Cursor list = mDbHelper.recuperarListaAlarmes();
+            ((AlarmClockCursorAdapter) listview.getAdapter()).setCursor(list);
+            listview.getAdapter().notifyDataSetChanged();
+            listview.setVisibility(list.getCount() == 0 ? View.GONE : View.VISIBLE);
+            textview.setVisibility(list.getCount() == 0 ? View.VISIBLE : View.GONE);
+        }
+        if(requestCode == ENABLING_GPS){
+            new GPSUtil().detectaAutomaticamente(this, true);
+        }
     }
 
 
@@ -102,10 +122,12 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
+/*
         if (id == R.id.action_add) {
             startActivityForResult(new Intent(getApplication(), EditClockActivity.class), SAVE_ALARM_REQUEST);
             return true;
         }
+*/
         if (id == R.id.action_settings) {
             startActivity(new Intent(getApplication(), SettingsActivity.class));
             return true;

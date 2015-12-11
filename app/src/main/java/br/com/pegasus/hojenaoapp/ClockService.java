@@ -16,6 +16,10 @@ import android.util.Pair;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import java.io.IOException;
@@ -31,7 +35,7 @@ import br.com.pegasus.hojenaoapp.task.HolidayAsyncTask;
 import br.com.pegasus.hojenaoapp.util.Constants;
 
 public class ClockService extends Service implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,LocationListener {
     public ClockService() {
     }
 
@@ -76,37 +80,52 @@ public class ClockService extends Service implements
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
         if (mLastLocation != null) {
-            Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-            try {
-                List<Address> addresses = geocoder.getFromLocation(
-                        mLastLocation.getLatitude(),
-                        mLastLocation.getLongitude(),
-                        // In this sample, get just a single address.
-                        1);
-                if (addresses.size() > 0) {
-                    Address address = addresses.get(0);
-                    if (address.getCountryCode().equals("BR")) {
-                        city = address.getLocality();
-                        state = address.getAdminArea();
-                        SharedPreferences settings = getSharedPreferences(Constants.PREFS_NAME, 0);
-                        SharedPreferences.Editor editor = settings.edit();
-                        editor.putString("city", city);
-                        editor.putString("state", state);
-                        editor.commit();
-                        /*if (!settings.contains("city") || !settings.getString("city", "").equals(city)) {
-                            new HolidayAsyncTask(this).execute(state, city);
-                            return;
-                        }*/
-                    }
+            updateStateAndCity(mLastLocation);
+        }else{
+            LocationRequest locationRequest = LocationRequest.create();
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            locationRequest.setInterval(1000);
+            locationRequest.setFastestInterval(1000);
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,locationRequest,this);
+        }
+    }
+    @Override
+    public void onLocationChanged(Location location) {
+        updateStateAndCity(location);
+    }
 
+    private void updateStateAndCity(Location mLastLocation) {
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(
+                    mLastLocation.getLatitude(),
+                    mLastLocation.getLongitude(),
+                    // In this sample, get just a single address.
+                    1);
+            if (addresses.size() > 0) {
+                Address address = addresses.get(0);
+                if (address.getCountryCode().equals("BR")) {
+                    city = address.getLocality();
+                    state = address.getAdminArea();
+                    SharedPreferences settings = getSharedPreferences(Constants.PREFS_NAME, 0);
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putString("city", city);
+                    editor.putString("state", state);
+                    editor.commit();
+                    /*if (!settings.contains("city") || !settings.getString("city", "").equals(city)) {
+                        new HolidayAsyncTask(this).execute(state, city);
+                        return;
+                    }*/
                 }
-                sendSucessBroadcast();
-            } catch (IOException ioe) {
 
             }
+            sendSucessBroadcast();
+        } catch (IOException ioe) {
+
         }
         stopSelf();
     }
+
 
     private void sendSucessBroadcast() {
         Intent intent = new Intent(Constants.CALLBACK_LOCALIZATION);
@@ -165,4 +184,6 @@ public class ClockService extends Service implements
         mGoogleApiClient.disconnect();
         mLocalBroadcastManager.unregisterReceiver(returnAsyncCall);
     }
+
+
 }

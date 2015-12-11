@@ -31,26 +31,29 @@ public class HolidayAsyncTask extends AbstractListAsyncTask<List<Feriado>> {
         state = params[0];
         city = params[1];
         try {
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("State");
-            query.whereEqualTo("name", state);
-            ParseObject parseObject = query.getFirst();
-            ParseQuery<ParseObject> queryCity = ParseQuery.getQuery("City");
-            queryCity.whereEqualTo("id_state", parseObject.getInt("id_state"));
-            queryCity.whereContains("name_city", city);
-            ParseObject parseCity = queryCity.getFirst();
-            ParseQuery<ParseObject> queryHoliday = ParseQuery.getQuery("Holiday");
-            queryHoliday.whereEqualTo("id_state",parseObject.getInt("id_state"));
-            queryHoliday.whereEqualTo("id_city",parseCity.getInt("id_city"));
             List<Feriado> list = new ArrayList<>();
-            List<ParseObject> parseObjects = queryHoliday.find();
-            ParseQuery<ParseObject> queryStateHoliday = ParseQuery.getQuery("StateHoliday");
-            queryStateHoliday.whereEqualTo("id_state",parseObject.getInt("id_state"));
-            parseObjects.addAll(queryStateHoliday.find());
-            for (ParseObject p : parseObjects){
-                Feriado feriado = new Feriado();
-                feriado.setData(p.getString("date"));
-                feriado.setNome(p.getString("name"));
-                list.add(feriado);
+            if(state !=null && !state.equals("")&& city!=null && !city.equals("")) {
+                ParseQuery<ParseObject> query = ParseQuery.getQuery("State");
+                query.whereEqualTo("name", state);
+                ParseObject parseObject = query.getFirst();
+                ParseQuery<ParseObject> queryCity = ParseQuery.getQuery("City");
+                queryCity.whereEqualTo("id_state", parseObject.getInt("id_state"));
+                queryCity.whereContains("name_city", city);
+                ParseObject parseCity = queryCity.getFirst();
+                ParseQuery<ParseObject> queryHoliday = ParseQuery.getQuery("Holiday");
+                queryHoliday.whereEqualTo("id_state", parseObject.getInt("id_state"));
+                queryHoliday.whereEqualTo("id_city", parseCity.getInt("id_city"));
+
+                List<ParseObject> parseObjects = queryHoliday.find();
+                ParseQuery<ParseObject> queryStateHoliday = ParseQuery.getQuery("StateHoliday");
+                queryStateHoliday.whereEqualTo("id_state", parseObject.getInt("id_state"));
+                parseObjects.addAll(queryStateHoliday.find());
+                for (ParseObject p : parseObjects) {
+                    Feriado feriado = new Feriado();
+                    feriado.setData(p.getString("date"));
+                    feriado.setNome(p.getString("name"));
+                    list.add(feriado);
+                }
             }
             return list;
         } catch (Exception e) {

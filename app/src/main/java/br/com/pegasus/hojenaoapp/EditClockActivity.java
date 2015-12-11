@@ -12,6 +12,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,7 +53,7 @@ public class EditClockActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
          mDbHelper = new ClockDatabaseHelper(getApplicationContext());
         setContentView(R.layout.activity_edit_clock);
-        Switch switcher =  (Switch)findViewById(R.id.inputSnooze);
+        SwitchCompat switcher =  (SwitchCompat)findViewById(R.id.inputSnooze);
         switcher.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -76,17 +77,17 @@ public class EditClockActivity extends AppCompatActivity {
             }
             int snooze = alarmClock.getSnooze();
             if(snooze>0) {
-                ((Switch) findViewById(R.id.inputSnooze)).setChecked(true);
+                ((SwitchCompat) findViewById(R.id.inputSnooze)).setChecked(true);
                 ((TextView) findViewById(R.id.inputSnoozeTime)).setText(String.valueOf(snooze));
             }
-            ((Switch) findViewById(R.id.inputFeriado)).setChecked(alarmClock.getHoliday());
+            ((SwitchCompat) findViewById(R.id.inputFeriado)).setChecked(alarmClock.getHoliday());
         }else{
             alarmClock = new AlarmClock();
             alarmClock.setActive(true);
             for (Integer id:checkboxes){
                 ((CheckBox)findViewById(id)).setChecked(true);
             }
-            ((Switch)findViewById(R.id.inputSnooze)).setChecked(true);
+            ((SwitchCompat)findViewById(R.id.inputSnooze)).setChecked(true);
             ((TextView)findViewById(R.id.inputSnoozeTime)).setText("10");
         }
     }
@@ -126,12 +127,12 @@ public class EditClockActivity extends AppCompatActivity {
                 sb.deleteCharAt(sb.lastIndexOf("#"));
             }
             alarmClock.setDaysofweek(sb.toString());
-            if(((Switch)findViewById(R.id.inputSnooze)).isChecked()){
+            if(((SwitchCompat)findViewById(R.id.inputSnooze)).isChecked()){
                 alarmClock.setSnooze(Integer.parseInt(((TextView) findViewById(R.id.inputSnoozeTime)).getText().toString()));
             }else{
                 alarmClock.setSnooze(0);
             }
-            alarmClock.setHoliday(((Switch) findViewById(R.id.inputFeriado)).isChecked());
+            alarmClock.setHoliday(((SwitchCompat) findViewById(R.id.inputFeriado)).isChecked());
             mDbHelper.saveAlarmClock(alarmClock);
             Context context = getApplicationContext();
             AlarmUtil.configureAlarm(alarmClock, context, true);
